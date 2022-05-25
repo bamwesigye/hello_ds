@@ -38,26 +38,14 @@ try:
     time.sleep(20)
     complete = driver.find_element(by=By.CSS_SELECTOR, value='#results > div.well > div:nth-child(2)').text.split(' ')[6]
     day = datetime.now().strftime('%d/%m/%Y %H:%S')
-    cur_week = datetime.now().strftime('%W') 
+    cur_week = datetime.now().strftime('%W')
     list= [cur_week,day,pending,in_progress,complete]
-    with open('complaints.csv', 'a') as csv_file:
+    with open('anacomplaints.csv', 'a') as csv_file:
         csv_writer = writer(csv_file)
         csv_writer.writerow(list)
         csv_file.close()
     print(datetime.now().strftime("%Y %m %d %H:%M"),"Task completed Succesfully")
-    print('Pending Complaints: ', pending)
-    print('In Progress Complaints: ', in_progress)
-    print('Complete Complaints: ', complete)
+    
 except Exception as err:
     print('failed operation \n\n\n\n', err)
     #//TODO send message incase of failure
-
-
-
-
-
-
-
-
-
-
