@@ -14,6 +14,8 @@ file_name = os.path.join(dir_path,'complaints_log.log')
 csv_file_name = os.path.join(dir_path,'complaints.csv')
 
 # print(file_name)
+print(csv_file_name)
+
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -29,7 +31,7 @@ driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), opti
 driver.maximize_window()
 
 try:
-    print('Logging into EMIS')  
+    logging.info('Logging into EMIS')  
     driver.get("http://emis.ubteb.go.ug:8080/")
     time.sleep(5)
     driver.find_element(by=By.CSS_SELECTOR, value='#user_login').send_keys('frank@ubteb.go.ug')
@@ -56,7 +58,7 @@ try:
     cur_week = datetime.now().strftime('%W') 
     list= [cur_week,day,pending,in_progress,complete]
     
-    with open('/home/mxp/dev/hello_ds/complaints.csv', 'a') as csv_file:
+    with open(csv_file_name, 'a') as csv_file:
         csv_writer = writer(csv_file)
         csv_writer.writerow(list)
         csv_file.close()
