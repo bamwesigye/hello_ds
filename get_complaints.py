@@ -1,18 +1,33 @@
+from fileinput import filename
 import logging
+import os
 from datetime import datetime
-import time, logging
 from csv import writer
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
+import time
+dir_path = os.path.dirname(os.path.realpath(__file__))
+file_name = os.path.join(dir_path,'complaints_log.log')
+csv_file_name = os.path.join(dir_path,'complaints.csv')
+
+# print(file_name)
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+file_handler = logging.FileHandler(filename=file_name)
+file_handler.setLevel(logging.INFO)
+file_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+logger.addHandler(file_handler)
 
 options = Options()
 # options.add_argument('--headless')
 # options.add_argument('--disable-gpu')  # Last I checked this was necessary.
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 driver.maximize_window()
+
 try:
     print('Logging into EMIS')  
     driver.get("http://emis.ubteb.go.ug:8080/")
@@ -23,7 +38,7 @@ try:
     time.sleep(2)
     driver.find_element(by=By.CSS_SELECTOR, value='input[data-disable-with="Log in"]').click()
     time.sleep(15)
-    print('loading complaints page')
+    logger.info('loading complaints page')
     driver.get ('http://emis.ubteb.go.ug:8080/complains')
     time.sleep(20)
     driver.find_element(by=By.CSS_SELECTOR, value='#filterrific_with_complain_status').send_keys('Pending')
@@ -40,24 +55,12 @@ try:
     day = datetime.now().strftime('%d/%m/%Y %H:%S')
     cur_week = datetime.now().strftime('%W') 
     list= [cur_week,day,pending,in_progress,complete]
-    with open('complaints.csv', 'a') as csv_file:
+    
+    with open('/home/mxp/dev/hello_ds/complaints.csv', 'a') as csv_file:
         csv_writer = writer(csv_file)
         csv_writer.writerow(list)
         csv_file.close()
-    print(datetime.now().strftime("%Y %m %d %H:%M"),"Task completed Succesfully")
-    print('Pending Complaints: ', pending)
-    print('In Progress Complaints: ', in_progress)
-    print('Complete Complaints: ', complete)
+    logger.info('Pending Complaints: %s In Progress Complaints: %s Complete Complaints: %s', pending, in_progress, complete)
 except Exception as err:
-    print('failed operation \n\n\n\n', err)
+    logger.warning('failed operation \n\n\n\n', err)
     #//TODO send message incase of failure
-
-
-
-
-
-
-
-
-
-
